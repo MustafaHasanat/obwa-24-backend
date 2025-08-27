@@ -1,0 +1,178 @@
+//? ------------- Database Configurations -------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//? ------------- Users table -------------
+// stores all types of users 
+
+model User {
+  id             String         @id @default(uuid())
+  // profile data
+  firstName      String
+  lastName       String
+  avatar         String?
+  gender         String? // (Gender enum)
+  phoneNumber    String?
+  mapsUrl        String?
+  // account data
+  email          String         @unique
+  password       String
+  accountType    String // (AccountType enum)
+  token          String?
+  // time-based data
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now())
+  // relational fields
+  userBusinesses UserBusiness[]
+  booklets       Booklet[]
+  orders         Order[]
+  orderItems     OrderItem[]
+  reviews        Review[]
+}
+
+//? ------------- Business Table -------------
+// stores the Business record data
+
+model Business {
+  id             String         @id @default(uuid())
+  // Business details
+  name           String
+  mapsUrl        String?
+  // time-based data
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now())
+  // relational fields
+  userBusinesses UserBusiness[]
+  booklets       Booklet[]
+  products       Product[]
+  orders         Order[]
+  orderItems     OrderItem[]
+  reviews        Review[]
+}
+
+//? ------------- UserBusiness Table (Joint Table) -------------
+// stores the UserBusiness record data
+model UserBusiness {
+  // time-based data
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  // many-to-one IDs
+  userId     String
+  businessId String
+  // many-to-one objects
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@id([userId, businessId]) // Composite primary key: This prevents duplicate rows with the same (userId, businessId) pair at the database level.
+}
+
+//? ------------- Booklet Table -------------
+// stores the Booklet record data
+
+model Booklet {
+  id         String    @id @default(uuid())
+  // Booklet details
+  vouchers   Int       @default(0)
+  // time-based data
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  // relational fields
+  userId     String
+  businessId String
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product    Product?
+}
+
+//? ------------- Product Table -------------
+// stores the Product record data
+
+model Product {
+  id          String      @id @default(uuid())
+  // Product details
+  title       String
+  description String
+  image       String?
+  price       Float // the price of the product
+  refillPrice Float? // only for containers
+  count       Int? // only for booklets and bottle-boxes
+  volume      Float? // only for containers and bottles
+  deliveryFee Float?      @default(0)
+  // time-based data
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
+  // relational fields
+  bookletId   String?     @unique
+  businessId  String
+  booklet     Booklet?    @relation(fields: [bookletId], references: [id])
+  business    Business?   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+  orderItems  OrderItem[]
+}
+
+//? ------------- Order Table -------------
+// stores the Order record data
+
+model Order {
+  id         String      @id @default(uuid())
+  // Order details
+  status     String // (OrderStatus enum)
+  // time-based data
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now())
+  // relational fields
+  userId     String
+  businessId String
+  user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business?   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+}
+
+//? ------------- OrderItem Table -------------
+// stores the OrderItem record data
+
+model OrderItem {
+  id         String    @id @default(uuid())
+  // OrderItem details
+  quantity   Int
+  type       String // (OrderItemType enum)
+  // time-based data
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  // relational fields
+  productId  String
+  orderId    String
+  userId     String
+  businessId String
+  product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order      Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+//? ------------- Review Table -------------
+// stores the Review record data
+
+model Review {
+  id         String    @id @default(uuid())
+  // Review details
+  rating     Int
+  comment    String?
+  // time-based data
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  // relational fields
+  productId  String
+  userId     String
+  businessId String
+  product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
