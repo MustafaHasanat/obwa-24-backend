@@ -1,13 +1,14 @@
 import { Messages, UserStatus } from "@/enums";
 import { CustomResponse } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
-import { corsHeaders } from "@/constants";
 import { prisma } from "@/configs";
 import speakeasy from "speakeasy";
+import { getCorsHeaders } from "@/constants";
 
 //! Add this in every route file
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
 interface VerifyToken2FAProps {
@@ -21,6 +22,7 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<string>>> {
   try {
+    const origin = request.headers.get("origin");
     const { action, email, token, setupKey } =
       (await request.json()) as VerifyToken2FAProps;
 
@@ -38,7 +40,7 @@ export async function POST(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     // if the action is to setup, check the setupKey
@@ -49,7 +51,7 @@ export async function POST(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     // if the action is to verify, assure that the user hasn't exceeded their attempts limit
@@ -63,7 +65,7 @@ export async function POST(
           payload: null,
           message: Messages.ACCOUNT_BLOCKED,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     const isVerified = speakeasy.totp.verify({
@@ -93,7 +95,7 @@ export async function POST(
             payload: null,
             message: Messages.UNKNOWN_ERROR,
           },
-          { headers: corsHeaders, status: 500 }
+          { headers: getCorsHeaders(origin), status: 500 }
         );
 
       return NextResponse.json(
@@ -105,7 +107,7 @@ export async function POST(
             (5 - (user?.failedVerifyAttempts + 1))?.toString()
           ),
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
     }
 
@@ -128,7 +130,7 @@ export async function POST(
               payload: null,
               message: Messages.UNKNOWN_ERROR,
             },
-            { headers: corsHeaders, status: 500 }
+            { headers: getCorsHeaders(origin), status: 500 }
           );
       }
       // if the action is a verify action, assure to reset the failure attempts
@@ -149,7 +151,7 @@ export async function POST(
               payload: null,
               message: Messages.UNKNOWN_ERROR,
             },
-            { headers: corsHeaders, status: 500 }
+            { headers: getCorsHeaders(origin), status: 500 }
           );
       }
     }
@@ -160,7 +162,7 @@ export async function POST(
         message: Messages.VERIFIED,
         status: 200,
       },
-      { headers: corsHeaders, status: 200 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   } catch (error) {
     console.error(error);
@@ -170,7 +172,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: corsHeaders, status: 500 }
+      { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }

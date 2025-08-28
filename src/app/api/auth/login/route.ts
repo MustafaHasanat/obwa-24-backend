@@ -4,17 +4,19 @@ import { CustomResponse } from "@/types";
 import { extractDataFromRequest } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByPasswordAction } from "@/app/actions";
-import { corsHeaders } from "@/constants";
+import { getCorsHeaders } from "@/constants";
 
 //! Add this in every route file
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
+    const origin = request.headers.get("origin");
     const jsonData = await request.json();
 
     const loginData = await extractDataFromRequest<CreateUser>({
@@ -26,9 +28,15 @@ export async function POST(
     const user = await getUserByPasswordAction(loginData);
 
     if (user?.status !== 200 || !user?.payload)
-      return NextResponse.json(user, { headers: corsHeaders, ...user });
+      return NextResponse.json(user, {
+        headers: getCorsHeaders(origin),
+        ...user,
+      });
 
-    return NextResponse.json(user, { headers: corsHeaders, ...user });
+    return NextResponse.json(user, {
+      headers: getCorsHeaders(origin),
+      ...user,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -37,7 +45,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: corsHeaders, status: 500 }
+      { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }

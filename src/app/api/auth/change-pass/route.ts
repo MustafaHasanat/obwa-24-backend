@@ -2,14 +2,15 @@ import { Messages } from "@/enums";
 import { User } from "@/models";
 import { CustomResponse } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
-import { corsHeaders } from "@/constants";
 import { prisma } from "@/configs";
 import bcrypt from "bcryptjs";
 import { getUserByPasswordAction } from "@/app/actions";
+import { getCorsHeaders } from "@/constants";
 
 //! Add this in every route file
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
 type UpdatePasswordProps = {
@@ -27,6 +28,8 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
+    const origin = request.headers.get("origin");
+
     const { data, email, skipCheck, userId } =
       (await request.json()) as UpdatePasswordProps;
 
@@ -37,7 +40,7 @@ export async function POST(
           payload: null,
           status: 404,
         },
-        { headers: corsHeaders, status: 404 }
+        { headers: getCorsHeaders(origin), status: 404 }
       );
 
     if (!skipCheck) {
@@ -48,7 +51,10 @@ export async function POST(
       });
 
       if (user?.status !== 200 || !user?.payload)
-        return NextResponse.json(user, { headers: corsHeaders, ...user });
+        return NextResponse.json(user, {
+          headers: getCorsHeaders(origin),
+          ...user,
+        });
     }
 
     const hashedPassword = await bcrypt.hash(data?.newPassword || "", 10);
@@ -71,7 +77,7 @@ export async function POST(
           payload: null,
           status: 500,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     return NextResponse.json(
@@ -81,7 +87,7 @@ export async function POST(
         status: 200,
       },
       {
-        headers: corsHeaders,
+        headers: getCorsHeaders(origin),
         status: 200,
       }
     );
@@ -93,7 +99,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: corsHeaders, status: 500 }
+      { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }

@@ -1,13 +1,14 @@
 import { prisma } from "@/configs";
-import { corsHeaders } from "@/constants";
+import { getCorsHeaders } from "@/constants";
 import { Messages } from "@/enums";
 import { User } from "@/models";
 import { CustomResponse } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 //! Add this in every route file
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
 export async function GET(
@@ -15,6 +16,7 @@ export async function GET(
   { params }: { params: Promise<{ identifier: string }> }
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
+    const origin = request.headers.get("origin");
     const { identifier } = await params;
     const searchParams = request.nextUrl.searchParams;
     const identifierType = searchParams.get("identifierType") as "id" | "email";
@@ -27,7 +29,7 @@ export async function GET(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     const user = await prisma.user.findUnique({
@@ -60,7 +62,7 @@ export async function GET(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
 
     return NextResponse.json(
@@ -69,7 +71,7 @@ export async function GET(
         payload: user as unknown as User,
         message: Messages.PRODUCT_CREATED,
       },
-      { headers: corsHeaders, status: 200 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   } catch (error) {
     console.error(error);
@@ -79,7 +81,7 @@ export async function GET(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: corsHeaders, status: 500 }
+      { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }

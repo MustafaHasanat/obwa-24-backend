@@ -6,18 +6,20 @@ import { extractDataFromRequest } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { createBusinessAction } from "@/app/actions/create-business-action";
-import { corsHeaders } from "@/constants";
+import { getCorsHeaders } from "@/constants";
 import jwt from "jsonwebtoken";
 
 //! Add this in every route file
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
+    const origin = request.headers.get("origin");
     const jsonData = await request.json();
 
     const userData = await extractDataFromRequest<
@@ -47,7 +49,7 @@ export async function POST(
           payload: null,
           message: Messages.USER_EXIST,
         },
-        { headers: corsHeaders, status: 500 }
+        { headers: getCorsHeaders(origin), status: 500 }
       );
     }
 
@@ -128,7 +130,7 @@ export async function POST(
         },
         message: Messages.USER_CREATED,
       },
-      { headers: corsHeaders, status: 200 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   } catch (error) {
     console.error(error);
@@ -138,7 +140,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: corsHeaders, status: 500 }
+      { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }
