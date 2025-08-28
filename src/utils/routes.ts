@@ -1,26 +1,28 @@
-import { NextRequest } from "next/server";
-
 export async function extractDataFromRequest<ReturnedType>({
-  request,
   fields,
   type,
+  formData,
+  jsonData,
 }: {
-  request: NextRequest;
   fields: string[];
   type: "formData" | "json";
+  formData?: FormData;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  jsonData?: any;
 }): Promise<ReturnedType> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let result: { [key: string]: any } = {};
+  const result: { [key: string]: any } = {};
 
-  if (type === "formData") {
-    const formData = await request.formData();
+  if (type === "formData" && formData) {
     fields.forEach((field) => {
       const value = formData.get(field);
       if (value) result[field] = value;
     });
-  } else if (type === "json") {
-    const data = await request.json();
-    result = data;
+  } else if (type === "json" && jsonData) {
+    fields.forEach((field) => {
+      const value = jsonData[field];
+      if (value) result[field] = value;
+    });
   }
 
   return result as ReturnedType;

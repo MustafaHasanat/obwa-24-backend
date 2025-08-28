@@ -7,32 +7,33 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { createBusinessAction } from "@/app/actions/create-business-action";
 import { corsHeaders } from "@/constants";
+import jwt from "jsonwebtoken";
+
+//! Add this in every route file
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
 
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
-    const userData = await extractDataFromRequest<CreateUser>({
-      request,
+    const jsonData = await request.json();
+
+    const userData = await extractDataFromRequest<
+      CreateUser & { businessId?: string }
+    >({
+      jsonData,
       type: "json",
       fields: [
         "firstName",
         "lastName",
-        "avatar",
-        "gender",
-        "phoneNumber",
-        "mapsUrl",
         "email",
         "password",
+        "confirmPassword",
         "accountType",
-        "token",
+        "businessId",
       ],
-    });
-
-    const businessData = await extractDataFromRequest<CreateBusiness>({
-      request,
-      type: "json",
-      fields: ["name", "mapsUrl"],
     });
 
     // Check if the user already exists
@@ -55,6 +56,7 @@ export async function POST(
       confirmPassword,
       password,
       accountType,
+      businessId,
       ...rest
     } = userData;
 
@@ -72,45 +74,58 @@ export async function POST(
 
     // if the account type was an owner, create a business for them
     if (accountType === AccountType.OWNER) {
+      const businessData = await extractDataFromRequest<CreateBusiness>({
+        jsonData,
+        type: "json",
+        fields: ["name", "mapsUrl"],
+      });
+
       const business = await createBusinessAction({
         businessData: {
           ...businessData,
         },
       });
 
-      if (!business)
-        return NextResponse.json(
-          {
-            status: 500,
-            payload: null,
-            message: Messages.UNKNOWN_ERROR,
-          },
-          { headers: corsHeaders, status: 500 }
-        );
-
       // link the business with the user
-      const userBusiness = await prisma.userBusiness.create({
+      await prisma.userBusiness.create({
         data: {
           businessId: business?.payload?.id || "",
           userId: user?.id || "",
         },
       });
-
-      if (!userBusiness)
-        return NextResponse.json(
-          {
-            status: 500,
-            payload: null,
-            message: Messages.UNKNOWN_ERROR,
-          },
-          { headers: corsHeaders, status: 500 }
-        );
     }
+
+    if (accountType === AccountType.AGENT) {
+      // find the business
+      const business = await prisma.business.findUnique({
+        where: { id: businessId },
+      });
+
+      if (business) {
+        // link the business with the user
+        await prisma.userBusiness.create({
+          data: {
+            businessId: businessId || "",
+            userId: user?.id || "",
+          },
+        });
+      }
+    }
+
+    // Generate a JWT access token for subsequent requests
+    const accessToken = jwt.sign(
+      { ...user },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1d" }
+    );
 
     return NextResponse.json(
       {
         status: 200,
-        payload: user as User,
+        payload: {
+          ...(user as unknown as User),
+          accessToken,
+        },
         message: Messages.USER_CREATED,
       },
       { headers: corsHeaders, status: 200 }

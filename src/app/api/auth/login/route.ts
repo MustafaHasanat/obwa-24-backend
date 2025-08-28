@@ -15,8 +15,10 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {
+    const jsonData = await request.json();
+
     const loginData = await extractDataFromRequest<CreateUser>({
-      request,
+      jsonData,
       type: "json",
       fields: ["email", "password"],
     });

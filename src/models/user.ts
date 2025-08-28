@@ -1,4 +1,4 @@
-import { AccountType, Gender } from "@/enums";
+import { AccountType, Gender, UserStatus } from "@/enums";
 import { UserBusiness } from "./user-business";
 import { Booklet } from "./booklet";
 import { Order } from "./order";
@@ -18,7 +18,10 @@ export type User = {
   email: string;
   password: string;
   accountType: AccountType;
+  status: UserStatus;
   token?: string;
+  failedVerifyAttempts: number;
+  totpSecret?: string;
   // time-based data
   createdAt: Date;
   updatedAt: Date;

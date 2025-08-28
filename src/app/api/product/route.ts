@@ -7,25 +7,31 @@ import { CustomResponse } from "@/types";
 import { extractDataFromRequest } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
+//! Add this in every route file
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<Product>>> {
   try {
+    const jsonData = await request.json();
     const authHeader = request.headers.get("authorization");
-    const isVerified = await verifyAuthToken(authHeader);
+    const isAuthenticated = await verifyAuthToken(authHeader);
 
-    if (isVerified?.status !== 200) {
+    if (isAuthenticated?.status !== 200) {
       return NextResponse.json(
         {
-          ...isVerified,
+          ...isAuthenticated,
           payload: null,
         },
-        { headers: corsHeaders, ...isVerified }
+        { headers: corsHeaders, ...isAuthenticated }
       );
     }
 
     const productData = await extractDataFromRequest<CreateProduct>({
-      request,
+      jsonData,
       type: "json",
       fields: [
         "title",

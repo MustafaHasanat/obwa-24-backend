@@ -13,28 +13,31 @@ datasource db {
 // stores all types of users 
 
 model User {
-  id             String         @id @default(uuid())
+  id                   String         @id @default(uuid())
   // profile data
-  firstName      String
-  lastName       String
-  avatar         String?
-  gender         String? // (Gender enum)
-  phoneNumber    String?
-  mapsUrl        String?
+  firstName            String
+  lastName             String
+  avatar               String?
+  gender               String? // (Gender enum)
+  phoneNumber          String?
+  mapsUrl              String?
   // account data
-  email          String         @unique
-  password       String
-  accountType    String // (AccountType enum)
-  token          String?
+  email                String         @unique
+  password             String
+  accountType          String // (AccountType enum)
+  status               String         @default("active") // (UserStatus enum) 
+  token                String?
+  failedVerifyAttempts Int            @default(0)
+  totpSecret           String?
   // time-based data
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @default(now())
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @default(now())
   // relational fields
-  userBusinesses UserBusiness[]
-  booklets       Booklet[]
-  orders         Order[]
-  orderItems     OrderItem[]
-  reviews        Review[]
+  userBusinesses       UserBusiness[]
+  booklets             Booklet[]
+  orders               Order[]
+  orderItems           OrderItem[]
+  reviews              Review[]
 }
 
 //? ------------- Business Table -------------
