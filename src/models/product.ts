@@ -2,6 +2,7 @@ import { Booklet } from "@prisma/client";
 import { Business } from "./business";
 import { Review } from "./review";
 import { OrderItem } from "./order-item";
+import { ProductType } from "@/enums";
 
 export type Product = {
   id: string;
@@ -9,6 +10,7 @@ export type Product = {
   title: string;
   description: string;
   price: number;
+  type: ProductType;
   image?: string;
   refillPrice?: number;
   count?: number;
@@ -39,5 +41,11 @@ export type CreateProduct = Omit<
 
 export type UpdateProduct = Omit<
   Partial<Product>,
-  "id" | "createdAt" | "updatedAt"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "booklet"
+  | "business"
+  | "reviews"
+  | "orderItems"
 >;

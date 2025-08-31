@@ -2,9 +2,9 @@ import { verifyAuthToken } from "@/app/actions";
 import { prisma } from "@/configs";
 import { getCorsHeaders } from "@/constants";
 import { Messages } from "@/enums";
-import { CreateProduct, Product } from "@/models";
-import { CustomPaginatedResponse, CustomResponse } from "@/types";
-import { extractDataFromRequest, getPaginationDetails } from "@/utils";
+import { Product, UpdateProduct } from "@/models";
+import { CustomResponse } from "@/types";
+import { extractDataFromRequest } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 //! Add this in every route file
@@ -13,64 +13,37 @@ export async function OPTIONS(request: NextRequest) {
   return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
-/**
- * Query params:
- *
- * @param businessId string
- * @param page number
- * @param pageSize number
- */
 export async function GET(
-  request: NextRequest
-): Promise<NextResponse<CustomPaginatedResponse<Product>>> {
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<CustomResponse<Product>>> {
   try {
+    const { id: productId } = await params;
     const origin = request.headers.get("origin");
     const authHeader = request.headers.get("authorization");
     const isAuthenticated = await verifyAuthToken(authHeader);
-    const searchParams = request.nextUrl.searchParams;
-    const businessId = searchParams.get("businessId") || "";
-    const page = Number(searchParams.get("page") || "1");
-    const pageSize = Number(searchParams.get("pageSize") || "20");
 
     if (isAuthenticated?.status !== 200) {
       return NextResponse.json(
         {
           ...isAuthenticated,
-          payload: [],
-          count: 0,
-          pagesCount: 0,
-          next: null,
-          previous: null,
+          payload: null,
         },
         { headers: getCorsHeaders(origin), ...isAuthenticated }
       );
     }
 
-    const totalProducts = await prisma.product.count({});
-
-    const products = await prisma.product.findMany({
+    const product = await prisma.product.findUnique({
       where: {
-        businessId,
+        id: productId,
       },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    const { nextPage, pagesCount, prevPage } = getPaginationDetails({
-      page,
-      pageSize,
-      totalRecords: totalProducts,
     });
 
     return NextResponse.json(
       {
         status: 200,
-        payload: products as Product[],
-        message: Messages.PRODUCTS_FOUND,
-        count: totalProducts,
-        next: nextPage,
-        previous: prevPage,
-        pagesCount,
+        payload: product as Product,
+        message: Messages.PRODUCT_FOUND,
       },
       { headers: getCorsHeaders(origin), status: 200 }
     );
@@ -80,21 +53,19 @@ export async function GET(
       {
         status: 500,
         message: Messages.UNKNOWN_ERROR,
-        payload: [],
-        count: 0,
-        pagesCount: 0,
-        next: null,
-        previous: null,
+        payload: null,
       },
       { headers: getCorsHeaders(origin), status: 500 }
     );
   }
 }
 
-export async function POST(
-  request: NextRequest
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse<CustomResponse<Product>>> {
   try {
+    const { id: productId } = await params;
     const origin = request.headers.get("origin");
     const jsonData = await request.json();
     const authHeader = request.headers.get("authorization");
@@ -110,7 +81,7 @@ export async function POST(
       );
     }
 
-    const productData = await extractDataFromRequest<CreateProduct>({
+    const productData = await extractDataFromRequest<UpdateProduct>({
       jsonData,
       type: "json",
       fields: [
@@ -122,11 +93,13 @@ export async function POST(
         "count",
         "volume",
         "deliveryFee",
-        "businessId",
       ],
     });
 
-    const product = await prisma.product.create({
+    const product = await prisma.product.update({
+      where: {
+        id: productId,
+      },
       data: {
         ...productData,
         reviews: {},
@@ -138,7 +111,7 @@ export async function POST(
       {
         status: 200,
         payload: product as Product,
-        message: Messages.PRODUCT_CREATED,
+        message: Messages.PRODUCT_UPDATED,
       },
       { headers: getCorsHeaders(origin), status: 200 }
     );
@@ -149,6 +122,53 @@ export async function POST(
         status: 500,
         payload: null,
         message: Messages.UNKNOWN_ERROR,
+      },
+      { headers: getCorsHeaders(origin), status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<CustomResponse<Product>>> {
+  try {
+    const { id: productId } = await params;
+    const origin = request.headers.get("origin");
+    const authHeader = request.headers.get("authorization");
+    const isAuthenticated = await verifyAuthToken(authHeader);
+
+    if (isAuthenticated?.status !== 200) {
+      return NextResponse.json(
+        {
+          ...isAuthenticated,
+          payload: null,
+        },
+        { headers: getCorsHeaders(origin), ...isAuthenticated }
+      );
+    }
+
+    const product = await prisma.product.delete({
+      where: {
+        id: productId,
+      },
+    });
+
+    return NextResponse.json(
+      {
+        status: 200,
+        payload: product as Product,
+        message: Messages.PRODUCT_DELETED,
+      },
+      { headers: getCorsHeaders(origin), status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      {
+        status: 500,
+        message: Messages.UNKNOWN_ERROR,
+        payload: null,
       },
       { headers: getCorsHeaders(origin), status: 500 }
     );

@@ -102,8 +102,9 @@ model Product {
   // Product details
   title       String
   description String
-  image       String?
   price       Float // the price of the product
+  type        String      @default("singleItem") // enum: ProductType
+  image       String?
   refillPrice Float? // only for containers
   count       Int? // only for booklets and bottle-boxes
   volume      Float? // only for containers and bottles
