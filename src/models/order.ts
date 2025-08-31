@@ -18,9 +18,12 @@ export type Order = {
   orderItems: OrderItem[];
 };
 
-export type CreateOrder = Omit<Order, "id" | "createdAt" | "updatedAt">;
+export type CreateOrder = Omit<
+  Order,
+  "id" | "createdAt" | "updatedAt" | "orderItems" | "business" | "user"
+>;
 
 export type UpdateOrder = Omit<
   Partial<Order>,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "createdAt" | "updatedAt" | "orderItems" | "business" | "user"
 >;
