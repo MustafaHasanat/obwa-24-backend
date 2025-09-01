@@ -3,3 +3,8 @@ export enum OrderStatus {
   DELIVERED = "delivered",
   CANCELED = "canceled",
 }
+
+export enum OrderItemType {
+  NEW = "new",
+  REFILL = "refill",
+}

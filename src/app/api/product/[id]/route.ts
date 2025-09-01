@@ -37,6 +37,14 @@ export async function GET(
       where: {
         id: productId,
       },
+      include: {
+        business: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(
