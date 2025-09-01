@@ -25,7 +25,7 @@ export async function PATCH(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -46,7 +46,7 @@ export async function PATCH(
           message: Messages.UNKNOWN_ERROR,
           payload: false,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     return NextResponse.json(
@@ -65,7 +65,7 @@ export async function PATCH(
         message: Messages.UNKNOWN_ERROR,
         payload: false,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

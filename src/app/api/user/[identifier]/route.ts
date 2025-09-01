@@ -29,7 +29,7 @@ export async function GET(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     const user = await prisma.user.findUnique({
@@ -62,7 +62,7 @@ export async function GET(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     return NextResponse.json(
@@ -81,7 +81,7 @@ export async function GET(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

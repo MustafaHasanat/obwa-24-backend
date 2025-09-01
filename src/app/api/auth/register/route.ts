@@ -49,7 +49,7 @@ export async function POST(
           payload: null,
           message: Messages.USER_EXIST,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
     }
 
@@ -140,7 +140,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

@@ -29,7 +29,7 @@ export async function GET(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(
         message: Messages.UNKNOWN_ERROR,
         payload: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }
@@ -77,7 +77,7 @@ export async function PATCH(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -122,7 +122,7 @@ export async function PATCH(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }
@@ -143,7 +143,7 @@ export async function DELETE(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -169,7 +169,7 @@ export async function DELETE(
         message: Messages.UNKNOWN_ERROR,
         payload: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

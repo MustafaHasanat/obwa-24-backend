@@ -42,7 +42,7 @@ export async function GET(
           next: null,
           previous: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -86,7 +86,7 @@ export async function GET(
         next: null,
         previous: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }
@@ -106,7 +106,7 @@ export async function POST(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -150,7 +150,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

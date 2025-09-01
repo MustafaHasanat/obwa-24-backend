@@ -31,7 +31,7 @@ export async function POST(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -77,7 +77,7 @@ export async function POST(
         message: Messages.UNKNOWN_ERROR,
         payload: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

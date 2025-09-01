@@ -40,7 +40,7 @@ export async function POST(
           payload: null,
           status: 404,
         },
-        { headers: getCorsHeaders(origin), status: 404 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     if (!skipCheck) {
@@ -77,7 +77,7 @@ export async function POST(
           payload: null,
           status: 500,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     return NextResponse.json(
@@ -99,7 +99,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

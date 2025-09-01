@@ -40,7 +40,7 @@ export async function POST(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     // if the action is to setup, check the setupKey
@@ -51,7 +51,7 @@ export async function POST(
           payload: null,
           message: Messages.UNKNOWN_ERROR,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     // if the action is to verify, assure that the user hasn't exceeded their attempts limit
@@ -65,7 +65,7 @@ export async function POST(
           payload: null,
           message: Messages.ACCOUNT_BLOCKED,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     const isVerified = speakeasy.totp.verify({
@@ -95,7 +95,7 @@ export async function POST(
             payload: null,
             message: Messages.UNKNOWN_ERROR,
           },
-          { headers: getCorsHeaders(origin), status: 500 }
+          { headers: getCorsHeaders(origin), status: 200 }
         );
 
       return NextResponse.json(
@@ -107,7 +107,7 @@ export async function POST(
             (5 - (user?.failedVerifyAttempts + 1))?.toString()
           ),
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
     }
 
@@ -130,7 +130,7 @@ export async function POST(
               payload: null,
               message: Messages.UNKNOWN_ERROR,
             },
-            { headers: getCorsHeaders(origin), status: 500 }
+            { headers: getCorsHeaders(origin), status: 200 }
           );
       }
       // if the action is a verify action, assure to reset the failure attempts
@@ -151,7 +151,7 @@ export async function POST(
               payload: null,
               message: Messages.UNKNOWN_ERROR,
             },
-            { headers: getCorsHeaders(origin), status: 500 }
+            { headers: getCorsHeaders(origin), status: 200 }
           );
       }
     }
@@ -172,7 +172,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

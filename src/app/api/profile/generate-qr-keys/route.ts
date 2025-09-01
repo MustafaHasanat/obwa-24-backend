@@ -52,7 +52,7 @@ export async function GET(request: NextRequest): Promise<
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest): Promise<
           message: Messages.UNKNOWN_ERROR,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     const user = await prisma.user.findUnique({
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest): Promise<
           message: Messages.UNKNOWN_ERROR,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     // generate a temporary TOTP setup key
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest): Promise<
           message: Messages.UNKNOWN_ERROR,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     // generate a temporary TOTP QR code
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest): Promise<
           message: Messages.UNKNOWN_ERROR,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     return NextResponse.json(
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest): Promise<
         message: Messages.UNKNOWN_ERROR,
         payload: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

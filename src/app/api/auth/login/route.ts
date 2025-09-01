@@ -31,6 +31,7 @@ export async function POST(
       return NextResponse.json(user, {
         headers: getCorsHeaders(origin),
         ...user,
+        status: 200,
       });
 
     return NextResponse.json(user, {
@@ -45,7 +46,7 @@ export async function POST(
         payload: null,
         message: Messages.UNKNOWN_ERROR,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }

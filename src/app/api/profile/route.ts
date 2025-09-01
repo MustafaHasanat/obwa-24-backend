@@ -32,7 +32,7 @@ export async function PATCH(
           ...isAuthenticated,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), ...isAuthenticated }
+        { headers: getCorsHeaders(origin), ...isAuthenticated, status: 200 }
       );
     }
 
@@ -75,7 +75,7 @@ export async function PATCH(
             message: Messages.UPLOADING_FAILED,
             payload: null,
           },
-          { headers: getCorsHeaders(origin), status: 500 }
+          { headers: getCorsHeaders(origin), status: 200 }
         );
       }
     }
@@ -95,7 +95,7 @@ export async function PATCH(
           message: Messages.UNKNOWN_ERROR,
           payload: null,
         },
-        { headers: getCorsHeaders(origin), status: 500 }
+        { headers: getCorsHeaders(origin), status: 200 }
       );
 
     // if the was an old avatar uploaded and has been replaced with a new one, delete the old one from the bucket
@@ -121,7 +121,7 @@ export async function PATCH(
         message: Messages.UNKNOWN_ERROR,
         payload: null,
       },
-      { headers: getCorsHeaders(origin), status: 500 }
+      { headers: getCorsHeaders(origin), status: 200 }
     );
   }
 }
