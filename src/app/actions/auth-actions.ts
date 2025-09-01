@@ -1,4 +1,5 @@
 import { Messages } from "@/enums";
+import { User } from "@/models";
 import { CustomResponse } from "@/types";
 import jwt from "jsonwebtoken";
 
@@ -9,7 +10,7 @@ export interface JwtPayload {
 
 export async function verifyAuthToken(
   authHeader: string | null
-): Promise<CustomResponse<boolean>> {
+): Promise<CustomResponse<{ isVerified: boolean; userData: User }>> {
   try {
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return {
@@ -44,7 +45,7 @@ export async function verifyAuthToken(
 
     return {
       message: Messages.AUTHORIZED,
-      payload: true,
+      payload: { isVerified: true, userData: payload as User },
       status: 200,
     };
   } catch (error) {

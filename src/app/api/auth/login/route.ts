@@ -12,7 +12,7 @@ export async function OPTIONS(request: NextRequest) {
   return NextResponse.json({}, { headers: getCorsHeaders(origin) });
 }
 
-export async function POST(
+export async function GET(
   request: NextRequest
 ): Promise<NextResponse<CustomResponse<User>>> {
   try {

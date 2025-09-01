@@ -35,7 +35,15 @@ export type User = {
 
 export type CreateUser = Omit<
   User,
-  "id" | "createdAt" | "updatedAt" | "password"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "password"
+  | "userBusiness"
+  | "booklet"
+  | "order"
+  | "orderItem"
+  | "review"
 > & {
   confirmPassword: string;
   password: string;
@@ -43,5 +51,13 @@ export type CreateUser = Omit<
 
 export type UpdateUser = Omit<
   Partial<User>,
-  "id" | "createdAt" | "updatedAt" | "password"
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "password"
+  | "userBusiness"
+  | "booklet"
+  | "order"
+  | "orderItem"
+  | "review"
 >;
