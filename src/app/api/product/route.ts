@@ -28,7 +28,7 @@ export async function GET(
     const authHeader = request.headers.get("authorization");
     const isAuthenticated = await verifyAuthToken(authHeader);
     const searchParams = request.nextUrl.searchParams;
-    const businessId = searchParams.get("businessId") || "";
+    const businessId = searchParams.get("businessId");
     const page = Number(searchParams.get("page") || "1");
     const pageSize = Number(searchParams.get("pageSize") || "20");
 
@@ -50,7 +50,7 @@ export async function GET(
 
     const products = await prisma.product.findMany({
       where: {
-        businessId,
+        ...(businessId ? { businessId } : {}),
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
