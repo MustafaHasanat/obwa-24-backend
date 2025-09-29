@@ -2,8 +2,6 @@ import { Business } from "./business";
 import { User } from "./user";
 
 export type UserBusiness = {
-  id: string;
-  // record details
   // time-based data
   createdAt: Date;
   updatedAt: Date;

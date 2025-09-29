@@ -1,6 +1,12 @@
 import { prisma } from "@/configs";
 import { AccountType, Messages } from "@/enums";
-import { CreateBusiness, CreateUser, User } from "@/models";
+import {
+  Business,
+  CreateBusiness,
+  CreateUser,
+  User,
+  UserBusiness,
+} from "@/models";
 import { CustomResponse } from "@/types";
 import { extractDataFromRequest } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -42,6 +48,7 @@ export async function POST(
     const existingUser = await prisma.user.findUnique({
       where: { email: userData?.email },
     });
+
     if (existingUser) {
       return NextResponse.json(
         {
@@ -74,6 +81,9 @@ export async function POST(
       },
     });
 
+    const userBusinesses: UserBusiness[] = [];
+    let currentBusiness: Business | null = null;
+
     // if the account type was an owner, create a business for them
     if (accountType === AccountType.OWNER) {
       const businessData = await extractDataFromRequest<CreateBusiness>({
@@ -88,13 +98,7 @@ export async function POST(
         },
       });
 
-      // link the business with the user
-      await prisma.userBusiness.create({
-        data: {
-          businessId: business?.payload?.id || "",
-          userId: user?.id || "",
-        },
-      });
+      currentBusiness = business?.payload;
     }
 
     if (accountType === AccountType.AGENT) {
@@ -103,15 +107,24 @@ export async function POST(
         where: { id: businessId },
       });
 
-      if (business) {
-        // link the business with the user
-        await prisma.userBusiness.create({
-          data: {
-            businessId: businessId || "",
-            userId: user?.id || "",
-          },
-        });
-      }
+      currentBusiness = business as Business;
+    }
+
+    if (currentBusiness) {
+      // link the business with the user
+      await prisma.userBusiness.create({
+        data: {
+          businessId: currentBusiness?.id || "",
+          userId: user?.id || "",
+        },
+      });
+
+      userBusinesses.push({
+        userId: user?.id || "",
+        businessId: currentBusiness?.id || "",
+        business: currentBusiness as Business,
+        user: user as User,
+      } as UserBusiness);
     }
 
     // Generate a JWT access token for subsequent requests
@@ -125,7 +138,7 @@ export async function POST(
       {
         status: 200,
         payload: {
-          ...(user as unknown as User),
+          ...({ ...user, userBusinesses } as User),
           accessToken,
         },
         message: Messages.USER_CREATED,

@@ -26,7 +26,7 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   // relations
-  userBusiness: UserBusiness[];
+  userBusinesses: UserBusiness[];
   booklet: Booklet[];
   order: Order[];
   orderItem: OrderItem[];
@@ -39,7 +39,7 @@ export type CreateUser = Omit<
   | "createdAt"
   | "updatedAt"
   | "password"
-  | "userBusiness"
+  | "userBusinesses"
   | "booklet"
   | "order"
   | "orderItem"
@@ -55,7 +55,7 @@ export type UpdateUser = Omit<
   | "createdAt"
   | "updatedAt"
   | "password"
-  | "userBusiness"
+  | "userBusinesses"
   | "booklet"
   | "order"
   | "orderItem"

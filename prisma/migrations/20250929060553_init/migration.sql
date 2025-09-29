@@ -4,13 +4,16 @@ CREATE TABLE "public"."User" (
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "avatar" TEXT,
-    "gender" TEXT NOT NULL,
+    "gender" TEXT,
     "phoneNumber" TEXT,
     "mapsUrl" TEXT,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "accountType" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "token" TEXT,
+    "failedVerifyAttempts" INTEGER NOT NULL DEFAULT 0,
+    "totpSecret" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -55,15 +58,16 @@ CREATE TABLE "public"."Product" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "image" TEXT,
     "price" DOUBLE PRECISION NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'singleItem',
+    "image" TEXT,
     "refillPrice" DOUBLE PRECISION,
     "count" INTEGER,
     "volume" DOUBLE PRECISION,
     "deliveryFee" DOUBLE PRECISION DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "bookletId" TEXT NOT NULL,
+    "bookletId" TEXT,
     "businessId" TEXT NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -129,7 +133,7 @@ ALTER TABLE "public"."Booklet" ADD CONSTRAINT "Booklet_userId_fkey" FOREIGN KEY 
 ALTER TABLE "public"."Booklet" ADD CONSTRAINT "Booklet_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "public"."Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Product" ADD CONSTRAINT "Product_bookletId_fkey" FOREIGN KEY ("bookletId") REFERENCES "public"."Booklet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Product" ADD CONSTRAINT "Product_bookletId_fkey" FOREIGN KEY ("bookletId") REFERENCES "public"."Booklet"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."Product" ADD CONSTRAINT "Product_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "public"."Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;

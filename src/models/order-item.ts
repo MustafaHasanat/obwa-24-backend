@@ -1,3 +1,4 @@
+import { OrderItemType } from "@/enums";
 import { Business } from "./business";
 import { Order } from "./order";
 import { Product } from "./product";
@@ -7,7 +8,7 @@ export type OrderItem = {
   id: string;
   // record details
   quantity: number;
-  type: string;
+  type: OrderItemType;
   // time-based data
   createdAt: Date;
   updatedAt: Date;
