@@ -96,12 +96,13 @@ export async function PATCH(
         "title",
         "description",
         "price",
-        "image",
+        "deliveryFee",
+        "type",
         "refillPrice",
         "count",
-        "type",
+        "vouchers",
         "volume",
-        "deliveryFee",
+        "image",
       ],
     });
 
