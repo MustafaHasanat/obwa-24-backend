@@ -100,7 +100,6 @@ export async function PATCH(
         "type",
         "refillPrice",
         "count",
-        "vouchers",
         "volume",
         "image",
       ],

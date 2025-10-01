@@ -121,7 +121,6 @@ export async function POST(
         "type",
         "refillPrice",
         "count",
-        "vouchers",
         "volume",
         "image",
         "businessId",
