@@ -121,6 +121,7 @@ export async function POST(
         "refillPrice",
         "count",
         "volume",
+        "type",
         "deliveryFee",
         "businessId",
       ],

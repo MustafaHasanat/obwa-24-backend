@@ -1,4 +1,5 @@
 export enum ProductType {
-  SINGLE_ITEM = "singleItem",
+  REFILLABLE_ITEM = "refillableItem",
+  BOX_OF_ITEMS = "boxOfItems",
   BOOKLET = "booklet",
 }
