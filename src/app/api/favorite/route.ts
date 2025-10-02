@@ -119,7 +119,7 @@ export async function POST(
     const favoriteData = await extractDataFromRequest<CreateFavorite>({
       jsonData,
       type: "json",
-      fields: ["type"],
+      fields: ["type", "businessId", "productId", "userId"],
     });
 
     const favorite = await prisma.favorites.create({
