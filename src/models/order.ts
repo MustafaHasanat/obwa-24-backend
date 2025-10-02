@@ -7,6 +7,7 @@ export type Order = {
   id: string;
   // record details
   status: OrderStatus;
+  total: number;
   // time-based data
   createdAt: Date;
   updatedAt: Date;

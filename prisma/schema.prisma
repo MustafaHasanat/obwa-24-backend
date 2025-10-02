@@ -131,6 +131,7 @@ model Order {
   id         String      @id @default(uuid())
   // Order details
   status     String // (OrderStatus enum)
+  total      Float
   // time-based data
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @default(now())
