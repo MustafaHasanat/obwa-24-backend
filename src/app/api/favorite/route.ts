@@ -122,6 +122,25 @@ export async function POST(
       fields: ["type", "businessId", "productId", "userId"],
     });
 
+    const oldFavorites = await prisma.favorites.findMany({
+      where: {
+        businessId: favoriteData?.businessId || undefined,
+        userId: favoriteData?.userId || undefined,
+        productId: favoriteData?.businessId || undefined,
+        type: favoriteData?.type || undefined,
+      },
+    });
+
+    if (oldFavorites?.length > 0)
+      return NextResponse.json(
+        {
+          status: 500,
+          payload: null,
+          message: Messages.FAVORITE_EXISTS,
+        },
+        { headers: getCorsHeaders(origin), status: 200 }
+      );
+
     const favorite = await prisma.favorites.create({
       data: {
         ...favoriteData,
