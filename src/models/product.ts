@@ -1,8 +1,9 @@
-import { Booklet } from "@prisma/client";
 import { Business } from "./business";
 import { Review } from "./review";
 import { OrderItem } from "./order-item";
 import { ProductType } from "@/enums";
+import { Favorite } from "./favorites";
+import { Booklet } from "./booklet";
 
 export type Product = {
   id: string;
@@ -26,6 +27,7 @@ export type Product = {
   businessId: string;
   reviews: Review[];
   orderItems: OrderItem[];
+  favorites: Favorite[];
 };
 
 export type CreateProduct = Omit<
@@ -36,6 +38,7 @@ export type CreateProduct = Omit<
   | "booklet"
   | "business"
   | "reviews"
+  | "favorites"
   | "orderItems"
 >;
 
@@ -46,6 +49,7 @@ export type UpdateProduct = Omit<
   | "updatedAt"
   | "booklet"
   | "business"
+  | "favorites"
   | "reviews"
   | "orderItems"
 >;

@@ -1,4 +1,5 @@
 import { Booklet } from "./booklet";
+import { Favorite } from "./favorites";
 import { Order } from "./order";
 import { OrderItem } from "./order-item";
 import { Product } from "./product";
@@ -20,11 +21,15 @@ export type Business = {
   orders: Order[];
   orderItems: OrderItem[];
   reviews: Review[];
+  favorites: Favorite[];
 };
 
-export type CreateBusiness = Omit<Business, "id" | "createdAt" | "updatedAt">;
+export type CreateBusiness = Omit<
+  Business,
+  "id" | "createdAt" | "updatedAt" | "favorites"
+>;
 
 export type UpdateBusiness = Omit<
   Partial<Business>,
-  "id" | "createdAt" | "updatedAt"
+  "id" | "createdAt" | "updatedAt" | "favorites"
 >;

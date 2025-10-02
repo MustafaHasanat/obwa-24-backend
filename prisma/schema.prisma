@@ -38,6 +38,7 @@ model User {
   orders               Order[]
   orderItems           OrderItem[]
   reviews              Review[]
+  favorites            Favorites[]
 }
 
 //? ------------- Business Table -------------
@@ -58,6 +59,7 @@ model Business {
   orders         Order[]
   orderItems     OrderItem[]
   reviews        Review[]
+  favorites      Favorites[]
 }
 
 //? ------------- UserBusiness Table (Joint Table) -------------
@@ -119,6 +121,7 @@ model Product {
   business    Business?   @relation(fields: [businessId], references: [id], onDelete: Cascade)
   reviews     Review[]
   orderItems  OrderItem[]
+  favorites   Favorites[]
 }
 
 //? ------------- Order Table -------------
@@ -179,4 +182,17 @@ model Review {
   product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model Favorites {
+  id         String    @id @default(uuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
+  userId     String?
+  businessId String?
+  productId  String?
+  type       String
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  product    Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

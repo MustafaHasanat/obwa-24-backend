@@ -4,6 +4,7 @@ import { Booklet } from "./booklet";
 import { Order } from "./order";
 import { OrderItem } from "./order-item";
 import { Review } from "./review";
+import { Favorite } from "./favorites";
 
 export type User = {
   id: string;
@@ -31,6 +32,7 @@ export type User = {
   order: Order[];
   orderItem: OrderItem[];
   review: Review[];
+  favorites: Favorite[];
 };
 
 export type CreateUser = Omit<
@@ -42,6 +44,7 @@ export type CreateUser = Omit<
   | "userBusinesses"
   | "booklet"
   | "order"
+  | "favorites"
   | "orderItem"
   | "review"
 > & {
@@ -54,6 +57,7 @@ export type UpdateUser = Omit<
   | "id"
   | "createdAt"
   | "updatedAt"
+  | "favorites"
   | "password"
   | "userBusinesses"
   | "booklet"
