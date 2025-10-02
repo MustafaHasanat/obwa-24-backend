@@ -22,6 +22,9 @@ export async function GET(
     const origin = request.headers.get("origin");
     const authHeader = request.headers.get("authorization");
     const isAuthenticated = await verifyAuthToken(authHeader);
+    const searchParams = request.nextUrl.searchParams;
+    const withBusiness = searchParams.get("withBusiness");
+    const withFavorites = searchParams.get("withFavorites");
 
     if (isAuthenticated?.status !== 200) {
       return NextResponse.json(
@@ -38,12 +41,29 @@ export async function GET(
         id: productId,
       },
       include: {
-        business: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        ...(withBusiness
+          ? {
+              business: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            }
+          : {}),
+        ...(withFavorites
+          ? {
+              favorites: {
+                select: {
+                  id: true,
+                  userId: true,
+                  businessId: true,
+                  productId: true,
+                  type: true,
+                },
+              },
+            }
+          : {}),
       },
     });
 

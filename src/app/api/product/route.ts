@@ -29,6 +29,8 @@ export async function GET(
     const isAuthenticated = await verifyAuthToken(authHeader);
     const searchParams = request.nextUrl.searchParams;
     const businessId = searchParams.get("businessId");
+    const withBusiness = searchParams.get("withBusiness");
+    const withFavorites = searchParams.get("withFavorites");
     const page = Number(searchParams.get("page") || "1");
     const pageSize = Number(searchParams.get("pageSize") || "20");
 
@@ -51,6 +53,31 @@ export async function GET(
     const products = await prisma.product.findMany({
       where: {
         ...(businessId ? { businessId } : {}),
+      },
+      include: {
+        ...(withBusiness
+          ? {
+              business: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            }
+          : {}),
+        ...(withFavorites
+          ? {
+              favorites: {
+                select: {
+                  id: true,
+                  userId: true,
+                  businessId: true,
+                  productId: true,
+                  type: true,
+                },
+              },
+            }
+          : {}),
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
